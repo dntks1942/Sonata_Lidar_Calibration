@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+	<!-- Record ublox/vpvt and icps topic excluding rviz topic -->
+	<node pkg="rosbag" name="recordData_lidar_imu_gpsIncluded" type="record" output="screen" args="--output-prefix=/home/nsslab/Howon/ros/slam_ws/recordData_lidar_imu_gpsIncluded_bag 
+--split --size=102400 
+
+/right/velodyne_packets
+/left/velodyne_packets
+/right/velodyne_points
+/left/velodyne_points
+
+/os1_cloud_node/imu
+/os1_cloud_node/partial_points
+/os1_node/imu_packets
+/os1_node/lidar_packets
+
+/an_device/Imu
+/an_device/body_acceleration
+/an_device/pose
+/an_device/NavSatFix
+/an_device/SystemStatus
+/an_device/FilterStatus
+
+/an_device/detailed_satellites_packet
+/an_device/raw_satellite_data_packet
+/an_device/raw_sensors_packet
+/an_device/satellites_packet
+/an_device/system_state_packet
+
+/asen_normal_0/icps/SensorInfo/SelfGPSSampleNmea
+/asen_normal_0/nmea/gpsSampleOnlyPosition
+/asen_normal_1/icps/SensorInfo/SelfGPSSampleNmea
+/asen_normal_1/nmea/gpsSampleOnlyPosition
+/asen_normal_2/icps/SensorInfo/SelfGPSSampleNmea
+/asen_normal_2/nmea/gpsSampleOnlyPosition
+
+/asen_sbas_0/icps/SensorInfo/SelfGPSSampleNmea
+/asen_sbas_0/nmea/gpsSampleOnlyPosition
+/asen_sbas_1/icps/SensorInfo/SelfGPSSampleNmea
+/asen_sbas_1/nmea/gpsSampleOnlyPosition
+/asen_sbas_2/icps/SensorInfo/SelfGPSSampleNmea
+/asen_sbas_2/nmea/gpsSampleOnlyPosition
+
+/ublox_rtk_0/gps/navpvt
+/ublox_rtk_0/icps/SensorInfo/SelfGPSSampleUblox
+/ublox_rtk_1/gps/navpvt
+/ublox_rtk_1/icps/SensorInfo/SelfGPSSampleUblox
+/ublox_rtk_2/gps/navpvt
+/ublox_rtk_2/icps/SensorInfo/SelfGPSSampleUblox
+
+
+ "/>
+</launch>
+

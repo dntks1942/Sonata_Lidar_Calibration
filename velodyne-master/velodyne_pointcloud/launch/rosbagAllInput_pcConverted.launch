@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+	<!-- Record ublox/vpvt and icps topic excluding rviz topic -->
+	<node pkg="rosbag" name="recordData_lidar_imu_gpsIncluded" type="record" output="screen" args="--output-prefix=/media/nsslab/Samsung_T5/20200924/pc_converted/recordData_lidar_imu_gpsIncluded_bag 
+--split --size=204800 --buffsize=20480
+
+/an_device/Imu
+/right/velodyne_points
+/left/velodyne_points
+/os1_cloud_node/partial_points
+
+
+
+ "/>
+</launch>
+

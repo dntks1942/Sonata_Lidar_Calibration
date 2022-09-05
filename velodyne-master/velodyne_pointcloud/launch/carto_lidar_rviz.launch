@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+	<!-- Publish static TF frame for RVIZ display -->
+<!--	<node pkg="tf" name="static_transform_publisher_1" type="static_transform_publisher" args="0 0 1.5 0 0 0 1 velo_world velodyne_front 10"/>
+	<node pkg="tf" name="static_transform_publisher_2" type="static_transform_publisher" args="0 0 1.5 0 0 0 1 velo_world velodyne_back 10"/>
+-->	
+	<!-- Run the RVIZ visualization tool -->
+	<node pkg="rviz" name="rviz" type="rviz" args="-d /home/nsslab/Howon/ros/slam_ws/src/velodyne-master/velodyne_pointcloud/rviz/carto_lidar.rviz"/>
+	
+</launch>

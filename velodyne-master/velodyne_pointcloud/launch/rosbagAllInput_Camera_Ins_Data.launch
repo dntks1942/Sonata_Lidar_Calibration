@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+	<!-- Record ublox/vpvt and icps topic excluding rviz topic -->
+	<node pkg="rosbag" name="recordData_cameara_ins" type="record" output="screen" args="--output-prefix=/home/nsslab/Howon/ros/slam_ws/bag_files/recordData_cameara_ins_bag --split --size=102400  
+
+
+/rotated_compressed_img_out/compressed
+
+/an_device/Imu
+/an_device/body_acceleration
+/an_device/body_velocity
+/an_device/pose
+/an_device/NavSatFix
+/an_device/SystemStatus
+/an_device/FilterStatus
+
+/ublox_normal_0/gps/navpvt
+/ublox_normal_0/icps/SensorInfo/SelfGPSSampleUblox
+/ublox_rtk_0/gps/navpvt
+/ublox_rtk_0/icps/SensorInfo/SelfGPSSampleUblox
+
+ "/>
+</launch>
+

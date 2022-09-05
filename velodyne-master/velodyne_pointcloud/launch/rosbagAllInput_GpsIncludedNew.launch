@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+	<!-- Record ublox/vpvt and icps topic excluding rviz topic -->
+	<node pkg="rosbag" name="recordData_lidar_imu_gpsIncluded" type="record" output="screen" args="--output-prefix=/home/nsslab/Howon/ros/slam_ws/recordData_lidar_imu_gpsIncluded_bag 
+--split --size=102400 
+
+
+-e /asen_normal_0/(.*)
+/asen_normal_1/(.*)
+/asen_normal_2/(.*)
+
+/asen_sbas_0/(.*)
+/asen_sbas_1/(.*)
+/asen_sbas_2/(.*)
+
+/ublox_rtk_0/(.*)
+/ublox_rtk_1/(.*)
+/ublox_rtk_2/(.*)
+
+/an_device/(.*)
+/INS/rtcm_topic
+
+/right/velodyne_packets
+/left/velodyne_packets
+/os1_node/imu_packets
+/os1_node/lidar_packets
+
+
+
+ "/>
+</launch>
+

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+	<!-- Record ublox/vpvt and icps topic excluding rviz topic -->
+	<node pkg="rosbag" name="recordData_lidar_imu" type="record" output="screen" args="--output-prefix=/home/nsslab/Howon/ros/slam_ws/bag_files/lidar_imu_bag --split --size=102400  /velodyne_points "/>
+</launch>
+
