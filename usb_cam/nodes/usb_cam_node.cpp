@@ -104,7 +104,7 @@ public:
     node_.param("fileName", fileName, std::string("cam1"));
     const char *file = fileName.c_str();
     fp = fopen(file, "a+");
-    sub_ = node_.subscribe("/os1_node/" + angleMessage, 1, &UsbCamNode::angleCallbackfunc, this);
+    sub_ = node_.subscribe("/os_node/" + angleMessage, 1, &UsbCamNode::angleCallbackfunc, this);
 
     image_transport::ImageTransport image_trans(node_);
     image_transport::Publisher image_pub = image_trans.advertise("/usb_cam/image_raw", 1);

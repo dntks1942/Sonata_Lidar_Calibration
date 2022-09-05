@@ -133,7 +133,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
                                                                                                   // 첨부된 ouster lidar software maunal의 17page와 os1_packet.h를 참고하면 알 수 있음
         auto lidar_col_0_h_angle = (ouster::col_h_angle(lidar_packet.buf.data()) * 180) / PI; // os1_packet.h의 라디안 return값을 degree로 변환하여 계산에 용이하도록 변환함
 
-        if(lidar_col_0_h_angle >= 359 && lidar_col_0_h_angle <= 2) {
+        if(lidar_col_0_h_angle >= 356.0 && lidar_col_0_h_angle <= 359.9) {
             //ss << "(174.0 to 186.0) camera shutter should be opearted by " << how_many_h_lidar_call << " and angle is : " << lidar_col_0_h_angle << "\ntime : " << lidar_col_0_ts;
             ss << ros::Time::now().nsec;
             angle_is_30.data = ss.str();

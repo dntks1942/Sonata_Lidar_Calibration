@@ -2,7 +2,7 @@
   <node name="usb_cam6" pkg="usb_cam" type="usb_cam_node" output="screen" >
     <!--rosparam file = "/home/coco/jjh_cam_ws/src/calibration/calib2/calib.yaml"/-->
     <param name="angleMessage" value="angle_topic6" />
-    <param name="fileName" value="/home/vialab/Sonata_lidar_ws/cam6_output.txt" /> 
+    <param name="fileName" value="/home/vialab/Sonata_ws/cam6_output.txt" /> 
     <param name="video_device" value="/dev/video10" />
     <param name="image_width" value="1280" />
     <param name="image_height" value="720" />
