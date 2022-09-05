@@ -24,6 +24,8 @@
 
 #include "std_msgs/String.h"
 #include "ouster/packet.h"
+#include <std_msgs/String.h>
+#include <stdlib.h>
 
 using PacketMsg = ouster_ros::PacketMsg;
 using OSConfigSrv = ouster_ros::OSConfigSrv;
@@ -31,6 +33,13 @@ using nonstd::optional;
 namespace sensor = ouster::sensor;
 
 #define PI 3.141592653589793238762
+
+
+
+// offset 저장을 위해서
+double alpha = 0.8;
+long long offset1 ,offset2, offset3, offset4, offset5, offset6;
+
 
 // fill in values that could not be parsed from metadata
 void populate_metadata_defaults(sensor::sensor_info& info,
@@ -80,6 +89,39 @@ bool write_metadata(const std::string& meta_file, const std::string& metadata) {
     return true;
 }
 
+
+// time_gap received callback function
+void refresh_offest1(const std_msgs::String::ConstPtr& time_gap){
+
+	offset1 = alpha * offset1 + ((1-alpha) * atoll((time_gap->data.c_str())));
+}
+
+void refresh_offest2(const std_msgs::String::ConstPtr& time_gap){
+
+	offset1 = alpha * offset2 + ((1-alpha) * atoll((time_gap->data.c_str())));
+}
+
+void refresh_offest3(const std_msgs::String::ConstPtr& time_gap){
+
+	offset1 = alpha * offset3 + ((1-alpha) * atoll((time_gap->data.c_str())));
+}
+
+void refresh_offest4(const std_msgs::String::ConstPtr& time_gap){
+
+	offset1 = alpha * offset4 + ((1-alpha) * atoll((time_gap->data.c_str())));
+}
+
+void refresh_offest5(const std_msgs::String::ConstPtr& time_gap){
+
+	offset1 = alpha * offset5 + ((1-alpha) * atoll((time_gap->data.c_str())));
+}
+
+void refresh_offest6(const std_msgs::String::ConstPtr& time_gap){
+
+	offset1 = alpha * offset6 + ((1-alpha) * atoll((time_gap->data.c_str())));
+}
+
+
 int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
                     const sensor::sensor_info& info) {
     auto lidar_packet_pub = nh.advertise<PacketMsg>("lidar_packets", 1280);
@@ -95,6 +137,15 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
     ros::Publisher pos_pub5 = nh.advertise<std_msgs::String>("angle_topic5", 1);
     ros::Publisher pos_pub6 = nh.advertise<std_msgs::String>("angle_topic6", 1);
 
+
+    ros::Subscriber sub1 = nh.subscribe("/usb_cam1/time_gap", 1, refresh_offest1);
+    ros::Subscriber sub2 = nh.subscribe("/usb_cam2/time_gap", 1, refresh_offest2);
+    ros::Subscriber sub3 = nh.subscribe("/usb_cam3/time_gap", 1, refresh_offest3);
+    ros::Subscriber sub4 = nh.subscribe("/usb_cam4/time_gap", 1, refresh_offest4);
+    ros::Subscriber sub5 = nh.subscribe("/usb_cam5/time_gap", 1, refresh_offest5);
+    ros::Subscriber sub6 = nh.subscribe("/usb_cam6/time_gap", 1, refresh_offest6);
+
+
     ros::Rate rate(10);
 
     uint64_t how_many_h_lidar_call = 0;
@@ -104,6 +155,27 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
     PacketMsg lidar_packet, imu_packet;
     lidar_packet.buf.resize(pf.lidar_packet_size + 1);
     imu_packet.buf.resize(pf.imu_packet_size + 1);
+
+
+
+    float cam1_low_angle = 356.0;
+    float cam1_high_angle = 359.9;
+
+    float cam2_low_angle = 44.0;
+    float cam2_high_angle = 46.0;
+
+    float cam3_low_angle = 134.0;
+    float cam3_high_angle = 136.0;
+
+    float cam4_low_angle = 179.0;
+    float cam4_high_angle = 181.0;
+
+    float cam5_low_angle = 224.0;
+    float cam5_high_angle = 226.0;
+
+    float cam6_low_angle = 314.0;
+    float cam6_high_angle = 316.0;
+
 
     while (ros::ok()) {
 
@@ -133,7 +205,9 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
                                                                                                   // 첨부된 ouster lidar software maunal의 17page와 os1_packet.h를 참고하면 알 수 있음
         auto lidar_col_0_h_angle = (ouster::col_h_angle(lidar_packet.buf.data()) * 180) / PI; // os1_packet.h의 라디안 return값을 degree로 변환하여 계산에 용이하도록 변환함
 
-        if(lidar_col_0_h_angle >= 356.0 && lidar_col_0_h_angle <= 359.9) {
+
+
+        if(lidar_col_0_h_angle >= cam1_low_angle && lidar_col_0_h_angle <= cam1_high_angle) {
             //ss << "(174.0 to 186.0) camera shutter should be opearted by " << how_many_h_lidar_call << " and angle is : " << lidar_col_0_h_angle << "\ntime : " << lidar_col_0_ts;
             ss << ros::Time::now().nsec;
             angle_is_30.data = ss.str();
@@ -155,7 +229,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
             how_many_h_lidar_call++;
             ros::spinOnce();
         }
-        else if(lidar_col_0_h_angle >= 44.0 && lidar_col_0_h_angle <= 46.0) {
+        else if(lidar_col_0_h_angle >= cam2_low_angle && lidar_col_0_h_angle <= cam2_high_angle) {
             ss << ros::Time::now().nsec;
             angle_is_30.data = ss.str();
             pos_pub2.publish(angle_is_30);
@@ -170,7 +244,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
             how_many_h_lidar_call++;
             ros::spinOnce();
         }
-        else if(lidar_col_0_h_angle >= 134.0 && lidar_col_0_h_angle <= 136.0) {
+        else if(lidar_col_0_h_angle >= cam3_low_angle && lidar_col_0_h_angle <= cam3_high_angle) {
             ss << ros::Time::now().nsec;
             angle_is_30.data = ss.str();
             pos_pub3.publish(angle_is_30);
@@ -181,7 +255,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
             how_many_h_lidar_call++;
             ros::spinOnce();
         }
-        else if(lidar_col_0_h_angle >= 179.0 && lidar_col_0_h_angle <= 181.0) {
+        else if(lidar_col_0_h_angle >= cam4_low_angle && lidar_col_0_h_angle <= cam4_high_angle) {
             ss << ros::Time::now().nsec;
             angle_is_30.data = ss.str();
             pos_pub4.publish(angle_is_30);
@@ -192,7 +266,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
             how_many_h_lidar_call++;
             ros::spinOnce();
         }
-        else if(lidar_col_0_h_angle >= 224.0 && lidar_col_0_h_angle <= 226.0) {
+        else if(lidar_col_0_h_angle >= cam5_low_angle && lidar_col_0_h_angle <= cam5_high_angle) {
             ss << ros::Time::now().nsec;
             angle_is_30.data = ss.str();
             pos_pub5.publish(angle_is_30);
@@ -203,7 +277,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
             how_many_h_lidar_call++;
             ros::spinOnce();
         }
-        else if(lidar_col_0_h_angle >= 314.0 && lidar_col_0_h_angle <= 316.0) {
+        else if(lidar_col_0_h_angle >= cam6_low_angle && lidar_col_0_h_angle <= cam6_high_angle) {
             ss << ros::Time::now().nsec;
             angle_is_30.data = ss.str();
             pos_pub6.publish(angle_is_30);

@@ -42,6 +42,7 @@
 #include <sstream>
 #include <std_srvs/Empty.h>
 #include <cstring>
+#include <stdlib.h>
 
 
 namespace usb_cam {
@@ -105,6 +106,8 @@ public:
     const char *file = fileName.c_str();
     fp = fopen(file, "a+");
     sub_ = node_.subscribe("/os_node/" + angleMessage, 1, &UsbCamNode::angleCallbackfunc, this);
+
+    pub_ = node_.advertise<std_msgs::String>("time_gap", 1); // To send time gap between lidar and camera to os_node
 
     image_transport::ImageTransport image_trans(node_);
     image_transport::Publisher image_pub = image_trans.advertise("/usb_cam/image_raw", 1);
@@ -298,8 +301,21 @@ public:
 	  ci->header.stamp = img_.header.stamp;
 	  long long ss = ci->header.stamp.nsec;
 	  fprintf(fp, "%s\t%lld\n", my_pos->data.c_str(), ss);
+
 	  // publish the image
 	  image_pub_.publish(img_, *ci);
+
+	  // send time_gap topic!!
+	  std_msgs::String time_gap;
+	  long long gap = ss - atoll(my_pos->data.c_str());
+	  if(ss < 0){
+		  ss = ss + 10000000; //변경 필요!!! 정확히 얼마를 더해야되는지
+	  }
+
+
+	  time_gap.data = ss;
+	  pub_.publish(time_gap);
+
                                                       // subscribe할 당시의 ROSTIME
 	      //FILE* fp = fopen("/home/vialab/jjh_ouster_ws/cam_output.txt", "a+");                         // 데이터를 txt파일로 저장하기 위한 코드로써, fopen("파일경로", "openmode")로 구성됨
 
