@@ -36,6 +36,7 @@
 
 #include <ros/ros.h>
 #include <std_msgs/String.h>
+#include<std_msgs/UInt32.h>
 #include <usb_cam/usb_cam.h>
 #include <image_transport/image_transport.h>
 #include <camera_info_manager/camera_info_manager.h>
@@ -289,7 +290,7 @@ public:
 
 
   // 이하의 angleCallbackfunc은 topic을 subscribe할 때 이를 저장하여 비교하기 위한 함수임
-  void angleCallbackfunc(const std_msgs::String::ConstPtr& my_pos) {
+  void angleCallbackfunc(const std_msgs::UInt32::ConstPtr& my_pos) {
 	  static int my_count = 0;
 	      //ROS_INFO("I heard the message : [%s]", my_pos->data.c_str());
 	  // grab the image
@@ -298,22 +299,22 @@ public:
 	  // grab the camera info
 	  sensor_msgs::CameraInfoPtr ci(new sensor_msgs::CameraInfo(cinfo_->getCameraInfo()));
 	  ci->header.frame_id = img_.header.frame_id;
-	  ci->header.stamp = img_.header.stamp;
-	  long long ss = ci->header.stamp.nsec;
-	  fprintf(fp, "%s\t%lld\n", my_pos->data.c_str(), ss);
+	  unsigned int seconds = ci->header.stamp.nsec;
+	  fprintf(fp, "%d\t%d\n", my_pos->data, seconds);
 
 	  // publish the image
 	  image_pub_.publish(img_, *ci);
 
 	  // send time_gap topic!!
-	  std_msgs::String time_gap;
-	  long long gap = ss - atoll(my_pos->data.c_str());
-	  if(ss < 0){
-		  ss = ss + 10000000; //변경 필요!!! 정확히 얼마를 더해야되는지
+	  std_msgs::UInt32 time_gap;
+
+	  if(seconds < my_pos->data){
+
+		  seconds = seconds + 10000000; //변경 필요!!! 정확히 얼마를 더해야되는지
 	  }
+	  unsigned int gap = seconds - (my_pos->data);
 
-
-	  time_gap.data = ss;
+	  time_gap.data = gap;
 	  pub_.publish(time_gap);
 
                                                       // subscribe할 당시의 ROSTIME
@@ -339,7 +340,7 @@ public:
 
 	      //fclose(fp);
 	      my_count++;                                                                             // 이 행부터 아래로 4행까지는 lidar가 publish한 데이터와 동일한지
-	      std::cout << "ros::Time::now().nsec : " << ss << std::endl;               // 확인하기 위한 검증과정임
+	      std::cout << "ros::Time::now().nsec : " << std::endl;               // 확인하기 위한 검증과정임
 	      std::cout << "n : " << my_count << std::endl;
 	      std::cout << "====================================\n";
 	      ros::spinOnce();

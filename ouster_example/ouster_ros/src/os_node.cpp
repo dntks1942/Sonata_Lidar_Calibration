@@ -25,6 +25,8 @@
 #include "std_msgs/String.h"
 #include "ouster/packet.h"
 #include <std_msgs/String.h>
+
+#include<std_msgs/UInt32.h>
 #include <stdlib.h>
 
 using PacketMsg = ouster_ros::PacketMsg;
@@ -91,34 +93,40 @@ bool write_metadata(const std::string& meta_file, const std::string& metadata) {
 
 
 // time_gap received callback function
-void refresh_offest1(const std_msgs::String::ConstPtr& time_gap){
+void refresh_offest1(const std_msgs::UInt32::ConstPtr& time_gap){
 
-	offset1 = alpha * offset1 + ((1-alpha) * atoll((time_gap->data.c_str())));
+	offset1 = alpha * offset1 + ((1-alpha) * time_gap->data);
+	std::cout << "offset1: " << offset1 << std::endl;
 }
 
-void refresh_offest2(const std_msgs::String::ConstPtr& time_gap){
+void refresh_offest2(const std_msgs::UInt32::ConstPtr& time_gap){
 
-	offset1 = alpha * offset2 + ((1-alpha) * atoll((time_gap->data.c_str())));
+	offset1 = alpha * offset2 + ((1-alpha) * time_gap->data);
+	std::cout << "offset2: " << offset2 << std::endl;
 }
 
-void refresh_offest3(const std_msgs::String::ConstPtr& time_gap){
+void refresh_offest3(const std_msgs::UInt32::ConstPtr& time_gap){
 
-	offset1 = alpha * offset3 + ((1-alpha) * atoll((time_gap->data.c_str())));
+	offset1 = alpha * offset3 + ((1-alpha) * time_gap->data);
+	std::cout << "offset3: " << offset3 << std::endl;
 }
 
-void refresh_offest4(const std_msgs::String::ConstPtr& time_gap){
+void refresh_offest4(const std_msgs::UInt32::ConstPtr& time_gap){
 
-	offset1 = alpha * offset4 + ((1-alpha) * atoll((time_gap->data.c_str())));
+	offset1 = alpha * offset4 + ((1-alpha) * time_gap->data);
+	std::cout << "offset4: " << offset4 << std::endl;
 }
 
-void refresh_offest5(const std_msgs::String::ConstPtr& time_gap){
+void refresh_offest5(const std_msgs::UInt32::ConstPtr& time_gap){
 
-	offset1 = alpha * offset5 + ((1-alpha) * atoll((time_gap->data.c_str())));
+	offset1 = alpha * offset5 + ((1-alpha) * time_gap->data);
+	std::cout << "offset5: " << offset5 << std::endl;
 }
 
-void refresh_offest6(const std_msgs::String::ConstPtr& time_gap){
+void refresh_offest6(const std_msgs::UInt32::ConstPtr& time_gap){
 
-	offset1 = alpha * offset6 + ((1-alpha) * atoll((time_gap->data.c_str())));
+	offset1 = alpha * offset6 + ((1-alpha) * time_gap->data);
+	std::cout << "offset6: " << offset6 << std::endl;
 }
 
 
@@ -130,12 +138,13 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
     auto pf = sensor::get_format(info);
 
     // 추가------------------------------------------------------
-    ros::Publisher pos_pub1 = nh.advertise<std_msgs::String>("angle_topic1", 1);
-    ros::Publisher pos_pub2 = nh.advertise<std_msgs::String>("angle_topic2", 1);
-    ros::Publisher pos_pub3 = nh.advertise<std_msgs::String>("angle_topic3", 1);
-    ros::Publisher pos_pub4 = nh.advertise<std_msgs::String>("angle_topic4", 1);
-    ros::Publisher pos_pub5 = nh.advertise<std_msgs::String>("angle_topic5", 1);
-    ros::Publisher pos_pub6 = nh.advertise<std_msgs::String>("angle_topic6", 1);
+
+    ros::Publisher pos_pub1 = nh.advertise<std_msgs::UInt32>("angle_topic1", 1);
+    ros::Publisher pos_pub2 = nh.advertise<std_msgs::UInt32>("angle_topic2", 1);
+    ros::Publisher pos_pub3 = nh.advertise<std_msgs::UInt32>("angle_topic3", 1);
+    ros::Publisher pos_pub4 = nh.advertise<std_msgs::UInt32>("angle_topic4", 1);
+    ros::Publisher pos_pub5 = nh.advertise<std_msgs::UInt32>("angle_topic5", 1);
+    ros::Publisher pos_pub6 = nh.advertise<std_msgs::UInt32>("angle_topic6", 1);
 
 
     ros::Subscriber sub1 = nh.subscribe("/usb_cam1/time_gap", 1, refresh_offest1);
@@ -179,8 +188,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
 
     while (ros::ok()) {
 
-    	std_msgs::String angle_is_30;                                                   // publish하기 위한 data (현재는 ROSTIME을 위해 String으로 publish함)
-    	std::stringstream ss;                                                           // data를 topic에 저장할 때, sstream을 이용함
+    	std_msgs::UInt32 angle_is_30;// publish하기 위한 data (현재는 ROSTIME을 위해 String으로 publish함)                                           // data를 topic에 저장할 때, sstream을 이용함
 
 
         auto state = sensor::poll_client(cli);
@@ -209,11 +217,8 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
 
         if(lidar_col_0_h_angle >= cam1_low_angle && lidar_col_0_h_angle <= cam1_high_angle) {
             //ss << "(174.0 to 186.0) camera shutter should be opearted by " << how_many_h_lidar_call << " and angle is : " << lidar_col_0_h_angle << "\ntime : " << lidar_col_0_ts;
-            ss << ros::Time::now().nsec;
-            angle_is_30.data = ss.str();
+            angle_is_30.data = ros::Time::now().nsec;
             pos_pub1.publish(angle_is_30);
-            std::cout << "ros::Time::now().sec : " << ros::Time::now().sec << std:: endl;
-            std::cout << "ros::Time::now().nsec : " << ros::Time::now().nsec << std:: endl;
         //   std::cout << (unsigned long)ros::Time::now().sec * 1000000000ull << std:: endl;
         //   std::cout << (unsigned long)ros::Time::now().nsec << std:: endl;
         //   ROS_INFO("SUHTTER SIGNAL IS PUBLISHED");
@@ -230,8 +235,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
             ros::spinOnce();
         }
         else if(lidar_col_0_h_angle >= cam2_low_angle && lidar_col_0_h_angle <= cam2_high_angle) {
-            ss << ros::Time::now().nsec;
-            angle_is_30.data = ss.str();
+        	angle_is_30.data = ros::Time::now().nsec;
             pos_pub2.publish(angle_is_30);
             std::cout << "ros::Time::now().sec : " << ros::Time::now().sec << std:: endl;
             std::cout << "ros::Time::now().nsec : " << ros::Time::now().nsec << std:: endl;
@@ -245,8 +249,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
             ros::spinOnce();
         }
         else if(lidar_col_0_h_angle >= cam3_low_angle && lidar_col_0_h_angle <= cam3_high_angle) {
-            ss << ros::Time::now().nsec;
-            angle_is_30.data = ss.str();
+        	angle_is_30.data = ros::Time::now().nsec;
             pos_pub3.publish(angle_is_30);
             std::cout << "ros::Time::now().sec : " << ros::Time::now().sec << std:: endl;
             std::cout << "ros::Time::now().nsec : " << ros::Time::now().nsec << std:: endl;
@@ -256,8 +259,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
             ros::spinOnce();
         }
         else if(lidar_col_0_h_angle >= cam4_low_angle && lidar_col_0_h_angle <= cam4_high_angle) {
-            ss << ros::Time::now().nsec;
-            angle_is_30.data = ss.str();
+        	angle_is_30.data = ros::Time::now().nsec;
             pos_pub4.publish(angle_is_30);
             std::cout << "ros::Time::now().sec : " << ros::Time::now().sec << std:: endl;
             std::cout << "ros::Time::now().nsec : " << ros::Time::now().nsec << std:: endl;
@@ -267,8 +269,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
             ros::spinOnce();
         }
         else if(lidar_col_0_h_angle >= cam5_low_angle && lidar_col_0_h_angle <= cam5_high_angle) {
-            ss << ros::Time::now().nsec;
-            angle_is_30.data = ss.str();
+        	angle_is_30.data = ros::Time::now().nsec;
             pos_pub5.publish(angle_is_30);
             std::cout << "ros::Time::now().sec : " << ros::Time::now().sec << std:: endl;
             std::cout << "ros::Time::now().nsec : " << ros::Time::now().nsec << std:: endl;
@@ -278,8 +279,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
             ros::spinOnce();
         }
         else if(lidar_col_0_h_angle >= cam6_low_angle && lidar_col_0_h_angle <= cam6_high_angle) {
-            ss << ros::Time::now().nsec;
-            angle_is_30.data = ss.str();
+        	angle_is_30.data = ros::Time::now().nsec;
             pos_pub6.publish(angle_is_30);
             std::cout << "ros::Time::now().sec : " << ros::Time::now().sec << std:: endl;
             std::cout << "ros::Time::now().nsec : " << ros::Time::now().nsec << std:: endl;

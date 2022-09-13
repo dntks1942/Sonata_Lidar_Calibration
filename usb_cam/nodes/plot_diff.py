@@ -5,7 +5,7 @@ import seaborn as sns
 
 # 이 함수는 기록한 데이터를 바탕으로 분포 그래프 등을 plot하기 위한 py파일임
 
-f = open('/home/vialab/Sonata_ws/cam_output1.txt', mode = 'r')
+f = open('/home/vialab/Sonata_ws/cam2_output.txt', mode = 'r')
 
 lines = f.readlines()
 
@@ -62,7 +62,7 @@ print(time)
 # 여기서 기록된 데이터는 첨부된 output22.txt를 기반으로 하며,
 # diff_plot은 difftime 전체를 plot 한 것이고 diff_distplot은 difftime을 분포곡선으로 plot한 것임
 sns.distplot(difftime)
-plt.axis([0, 50, 0, 0.2])
+plt.axis([0, 20, 0, 1])
 plt.xlabel('(CameraRosTime(nsec) - LidarRosTime(nsec)) / 1000000')
 plt.grid(True)
 plt.show()
