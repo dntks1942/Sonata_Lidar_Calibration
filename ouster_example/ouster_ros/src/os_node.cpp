@@ -91,43 +91,87 @@ bool write_metadata(const std::string& meta_file, const std::string& metadata) {
     return true;
 }
 
+//get nano time;
+int time_covert_angle(int time){
+	time %= 1000000;
+	int angle = time * 3.6; // 10HZ =>  3.6deg/1ms
+	return angle;
+}
+
+
+float cam1_low_angle = 359.0;
+float cam1_high_angle = 359.9;
+
+float cam2_low_angle = 44.0;
+float cam2_high_angle = 45.0;
+
+float cam3_low_angle = 134.0;
+float cam3_high_angle = 135.0;
+
+float cam4_low_angle = 179.0;
+float cam4_high_angle = 180.0;
+
+float cam5_low_angle = 224.0;
+float cam5_high_angle = 225.0;
+
+float cam6_low_angle = 314.0;
+float cam6_high_angle = 315.0;
 
 // time_gap received callback function
 void refresh_offest1(const std_msgs::UInt32::ConstPtr& time_gap){
 
 	offset1 = alpha * offset1 + ((1-alpha) * time_gap->data);
+	int angle = time_covert_angle(offset1);
+	cam1_low_angle = 359.0 - offset1;
+	cam1_high_angle = 359.9 - offset1;
 	std::cout << "offset1: " << offset1 << std::endl;
 }
 
 void refresh_offest2(const std_msgs::UInt32::ConstPtr& time_gap){
 
-	offset1 = alpha * offset2 + ((1-alpha) * time_gap->data);
+	offset2 = alpha * offset2 + ((1-alpha) * time_gap->data);
+	int angle = time_covert_angle(offset2);
+	cam1_low_angle = 44.0 - offset2;
+	cam1_high_angle = 45.0 - offset2;
 	std::cout << "offset2: " << offset2 << std::endl;
 }
 
 void refresh_offest3(const std_msgs::UInt32::ConstPtr& time_gap){
 
-	offset1 = alpha * offset3 + ((1-alpha) * time_gap->data);
+	offset3 = alpha * offset3 + ((1-alpha) * time_gap->data);
+	int angle = time_covert_angle(offset3);
+	cam1_low_angle = 134.0 - offset3;
+	cam1_high_angle = 135.0 - offset3;
 	std::cout << "offset3: " << offset3 << std::endl;
 }
 
 void refresh_offest4(const std_msgs::UInt32::ConstPtr& time_gap){
 
-	offset1 = alpha * offset4 + ((1-alpha) * time_gap->data);
+	offset4 = alpha * offset4 + ((1-alpha) * time_gap->data);
+	int angle = time_covert_angle(offset4);
+	cam1_low_angle = 179.0 - offset4;
+	cam1_high_angle = 180.0 - offset4;
 	std::cout << "offset4: " << offset4 << std::endl;
 }
 
 void refresh_offest5(const std_msgs::UInt32::ConstPtr& time_gap){
 
-	offset1 = alpha * offset5 + ((1-alpha) * time_gap->data);
+	offset5 = alpha * offset5 + ((1-alpha) * time_gap->data);
+	int angle = time_covert_angle(offset5);
+	cam1_low_angle = 224.0 - offset5;
+	cam1_high_angle = 225.0 - offset5;
 	std::cout << "offset5: " << offset5 << std::endl;
 }
 
 void refresh_offest6(const std_msgs::UInt32::ConstPtr& time_gap){
 
-	offset1 = alpha * offset6 + ((1-alpha) * time_gap->data);
+	offset6 = alpha * offset6 + ((1-alpha) * time_gap->data); // time_gap
+	int angle = time_covert_angle(offset6);
+	cam1_low_angle = 314.0 - offset6;
+	cam1_high_angle = 315.0 - offset6;
 	std::cout << "offset6: " << offset6 << std::endl;
 }
+
 
 
 int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
@@ -138,7 +182,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
     auto pf = sensor::get_format(info);
 
     // 추가------------------------------------------------------
-
+    // 카메라별 publisher(특정 각도가 되면 시간 message를 publish한다)
     ros::Publisher pos_pub1 = nh.advertise<std_msgs::UInt32>("angle_topic1", 1);
     ros::Publisher pos_pub2 = nh.advertise<std_msgs::UInt32>("angle_topic2", 1);
     ros::Publisher pos_pub3 = nh.advertise<std_msgs::UInt32>("angle_topic3", 1);
@@ -146,7 +190,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
     ros::Publisher pos_pub5 = nh.advertise<std_msgs::UInt32>("angle_topic5", 1);
     ros::Publisher pos_pub6 = nh.advertise<std_msgs::UInt32>("angle_topic6", 1);
 
-
+    // 카메라별 subscriber(camera node에서 사진을 보낸과 앞서 os_node에서 보낸 시간의 차를 받아서 offset을 갱신한다)
     ros::Subscriber sub1 = nh.subscribe("/usb_cam1/time_gap", 1, refresh_offest1);
     ros::Subscriber sub2 = nh.subscribe("/usb_cam2/time_gap", 1, refresh_offest2);
     ros::Subscriber sub3 = nh.subscribe("/usb_cam3/time_gap", 1, refresh_offest3);
@@ -167,23 +211,7 @@ int connection_loop(ros::NodeHandle& nh, sensor::client& cli,
 
 
 
-    float cam1_low_angle = 356.0;
-    float cam1_high_angle = 359.9;
 
-    float cam2_low_angle = 44.0;
-    float cam2_high_angle = 46.0;
-
-    float cam3_low_angle = 134.0;
-    float cam3_high_angle = 136.0;
-
-    float cam4_low_angle = 179.0;
-    float cam4_high_angle = 181.0;
-
-    float cam5_low_angle = 224.0;
-    float cam5_high_angle = 226.0;
-
-    float cam6_low_angle = 314.0;
-    float cam6_high_angle = 316.0;
 
 
     while (ros::ok()) {

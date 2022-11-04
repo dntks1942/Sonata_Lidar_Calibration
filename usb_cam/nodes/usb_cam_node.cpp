@@ -108,7 +108,7 @@ public:
     fp = fopen(file, "a+");
     sub_ = node_.subscribe("/os_node/" + angleMessage, 1, &UsbCamNode::angleCallbackfunc, this);
 
-    pub_ = node_.advertise<std_msgs::String>("time_gap", 1); // To send time gap between lidar and camera to os_node
+    pub_ = node_.advertise<std_msgs::UInt32>("time_gap", 1); // To send time gap between lidar and camera to os_node
 
     image_transport::ImageTransport image_trans(node_);
     image_transport::Publisher image_pub = image_trans.advertise("/usb_cam/image_raw", 1);
